@@ -81,7 +81,6 @@ def collaborative_validation(user_item_matrix, user_similarity_df, exhibit_data)
 
     # Iterate over each sample user
     for i in random_user_ids:
-        prev = 0
         mean_score_array = [0]
         start_from = 1 - part
         end_with = 0

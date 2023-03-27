@@ -7,7 +7,7 @@ from collaborative_system import collaborative_system
 from distance import distance
 from merge_recommendations import merge_recommendations
 
-#start_generators()
+# start_generators()
 
 start = time.time()
 

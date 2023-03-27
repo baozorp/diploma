@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+§# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -157,3 +157,7 @@ cython_debug/
 
 #CSV files
 *.csv
+
+#sublime project file
+*.sublime-project
+*.sublime-workspace
