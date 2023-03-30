@@ -1,6 +1,7 @@
 import time
 from threading import Thread
 import yaml
+import os
 
 from generators.generators import start_generators
 from recommendation_systems.content_based import content_based
@@ -16,6 +17,15 @@ with open('config.yaml', 'r') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
 sources_path = config['paths']['sources']
 results_path = config['paths']['results']
+
+if not os.path.exists(sources_path):
+    raise FileNotFoundError(f"Exhibit folder {sources_path} not found.")
+
+if not os.path.exists(results_path):
+    try:
+        os.makedirs(results_path)
+    except OSError as e:
+        raise OSError(f"Failed to create directory: {results_path}") from e
 
 targets = [
     (collaborative_system, sources_path, results_path),
