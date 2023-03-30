@@ -1,13 +1,24 @@
 import pandas as pd
-from sklearn.metrics.pairwise import pairwise_distances
 from sklearn.metrics.pairwise import cosine_similarity
 import random
+import os
 
 
-def collaborative_system():
+def collaborative_system(sources_path, results_path):
+
+    exhibit_data_path = sources_path + "/exhibit_data.csv"
+    current_user_path = sources_path + "/current_user.csv"
+
+    if not os.path.isfile(exhibit_data_path):
+        raise FileNotFoundError(f"Exhibit data file {exhibit_data_path} not found.")
+
+    if not os.path.isfile(current_user_path):
+        raise FileNotFoundError(f"Current user data file {current_user_path} not found.")
+
     # Load in the exhibit data
-    exhibit_data = pd.read_csv("sources/exhibit_data.csv")
-    current_user = pd.read_csv("sources/current_user.csv")
+    exhibit_data = pd.read_csv(exhibit_data_path)
+    current_user = pd.read_csv(current_user_path)
+
     if current_user.shape[0] < 20:
         return
     # Clip the time_spent values to 100 scores
@@ -18,7 +29,7 @@ def collaborative_system():
     user_item_matrix = exhibit_data.pivot_table(values='time_spent', index='user_id', columns='object_id').fillna(0)
     # Compute user similarity based on user-item interactions
     # Here, we are using cosine similarity as the similarity metric
-    user_similarity = 1 - pairwise_distances(user_item_matrix, metric='cosine')
+    user_similarity = cosine_similarity(user_item_matrix)
     user_similarity_df = pd.DataFrame(user_similarity, index=user_item_matrix.index, columns=user_item_matrix.index)
 
     # Validate the collaborative filtering system using a random subset of the data
@@ -32,7 +43,7 @@ def collaborative_system():
     prediction_df = pd.DataFrame(prediction, columns=['seconds'])
     prediction_df.reset_index(inplace=True)
     prediction_df.rename(columns={'object_id': 'ID'}, inplace=True)
-    prediction_df.to_csv('results/recs_collaborative.csv', index=False)
+    prediction_df.to_csv(f"{results_path}/recs_collaborative.csv", index=False)
 
 
 def get_collaborative_filtering_recs(user_id, user_item_matrix, user_similarity_df, start_from=1, end_with=11, with_validation=False):
@@ -42,11 +53,8 @@ def get_collaborative_filtering_recs(user_id, user_item_matrix, user_similarity_
     # Get the similarity scores for the user
     user_similarities = user_similarity_df[user_id]
 
-    # Get the top recommendations
-    top_recs = user_similarities
-
     # Sort the recommendations by scores
-    top_recs = top_recs.sort_values(ascending=False)
+    top_recs = user_similarities.sort_values(ascending=False)
 
     # Get the top recommendations within the specified range
     cf_recs = top_recs[start_from:end_with]

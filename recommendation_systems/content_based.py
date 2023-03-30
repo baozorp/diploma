@@ -3,13 +3,12 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import pairwise_distances
 import numpy as np
-
 # Function to recommend similar wines
 
 
-def content_based():
+def content_based(sources_path, results_path):
 
-    current_user = pd.read_csv("sources/current_user.csv")
+    current_user = pd.read_csv(f"{sources_path}/current_user.csv")
 
     # Get the ID of the last object visited by user 0
     last_object_id = current_user.iloc[-1]['object_id']
@@ -46,6 +45,7 @@ def content_based():
     validation_result = (similarities == sorted(similarities, reverse=True))
     if validation_result:
         print("Content based has been successfully validated")
+        list_of_wines.to_csv(f"{results_path}/recs_content_based.csv", index=False)
     else:
         print("Content based had a validation error")
 
@@ -61,5 +61,4 @@ def _recommend_wines(id, similarity, df):
     # Create a DataFrame of the sorted scores
     result = pd.DataFrame({'ID': scores[:, 0], 'similarity': scores[:, 1]})
 
-    result.to_csv("results/recs_content_based.csv", index=False)
     return result
