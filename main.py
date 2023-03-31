@@ -41,10 +41,9 @@ for target in targets:
 for thread in threads:
     thread.start()
 
+
 for thread in threads:
     thread.join()
-
-merge_recommendations()
 
 end = time.time() - start
 print(f"{end} seconds")

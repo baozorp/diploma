@@ -21,7 +21,8 @@ def collaborative_system(sources_path, results_path):
 
     if current_user.shape[0] < 20:
         return
-    # Clip the time_spent values to 100 scores
+
+    # Clip the time_spent values to 300 scores
     exhibit_data = pd.concat([exhibit_data, current_user], ignore_index=True)
     exhibit_data['time_spent'] = exhibit_data['time_spent'].clip(upper=300)
 
@@ -32,13 +33,14 @@ def collaborative_system(sources_path, results_path):
     user_similarity = cosine_similarity(user_item_matrix)
     user_similarity_df = pd.DataFrame(user_similarity, index=user_item_matrix.index, columns=user_item_matrix.index)
 
-    # Validate the collaborative filtering system using a random subset of the data
-    collaborative_validation(user_item_matrix, user_similarity_df, exhibit_data)
-
     # Get collaborative filtering recommendations for a specific user and save the results to a CSV file
     user_id = exhibit_data['user_id'].min()
 
     prediction = get_collaborative_filtering_recs(user_id, user_item_matrix, user_similarity_df)
+
+    # Validate the collaborative filtering system using a random subset of the data
+    collaborative_filtering_validation(user_id, user_item_matrix, user_similarity_df, exhibit_data)
+
     prediction = prediction.sort_values(ascending=False)
     prediction_df = pd.DataFrame(prediction, columns=['seconds'])
     prediction_df.reset_index(inplace=True)
@@ -46,7 +48,7 @@ def collaborative_system(sources_path, results_path):
     prediction_df.to_csv(f"{results_path}/recs_collaborative.csv", index=False)
 
 
-def get_collaborative_filtering_recs(user_id, user_item_matrix, user_similarity_df, start_from=1, end_with=11, with_validation=False):
+def get_collaborative_filtering_recs(user_id, user_item_matrix, user_similarity_df, start_from=1, end_with=11, validation=False):
     # Get the user's interactions
     user_interactions = user_item_matrix.loc[user_id]
 
@@ -71,52 +73,50 @@ def get_collaborative_filtering_recs(user_id, user_item_matrix, user_similarity_
 
     # Exclude items that the user has already rated
     user_interactions = user_item_matrix.loc[user_id]
-    user_interactions = user_interactions[user_interactions > 0] if with_validation else user_interactions[user_interactions == False]
+    user_interactions = user_interactions[user_interactions > 0] if validation else user_interactions[user_interactions == False]
     prediction = prediction[user_interactions.index] / coeff
     return prediction
 
 
-def collaborative_validation(user_item_matrix, user_similarity_df, exhibit_data):
+def collaborative_filtering_validation(user_id, user_item_matrix, user_similarity_df, exhibit_data):
     # Get 5 random user IDs from the list
     user_ids = exhibit_data['user_id'].unique()
-    random_user_ids = random.sample(user_ids.tolist(), 5)
 
     # Calculate the number of users in each part of the dataset
-    part = int(len(user_ids) / len(random_user_ids))
+    part = int(len(user_ids) / 5)
 
     # Initialize validation_result to True
     validation_result = True
 
-    # Iterate over each sample user
-    for i in random_user_ids:
-        mean_score_array = [0]
-        start_from = 1 - part
-        end_with = 0
+    mean_score_array = [0]
+    start_from = 1 - part
+    end_with = 0
 
-        # Iterate over each part of the dataset
-        for j in range(len(random_user_ids)):
-            # Get the collaborative filtering recommendations for a sample user
-            start_from += part
-            end_with += part
-            user_interactions = user_item_matrix.loc[i]
-            user_interactions = user_interactions[user_interactions > 0]
-            prediction = get_collaborative_filtering_recs(i, user_item_matrix, user_similarity_df, start_from, end_with, with_validation=True)
+    # Iterate over each part of the dataset
+    for j in range(5):
+        # Get the collaborative filtering recommendations for a sample user
+        start_from += part
+        end_with += part
+        user_interactions = user_item_matrix.loc[user_id]
+        user_interactions = user_interactions[user_interactions > 0]
+        prediction = get_collaborative_filtering_recs(user_id, user_item_matrix, user_similarity_df, start_from, end_with, validation=True)
+        print(prediction.sort_values(ascending=False))
 
-            # Calculate the mean absolute error between the predicted and actual ratings
-            prediction = prediction / user_interactions
-            prediction = (prediction - 1).abs()
+        # Calculate the mean absolute error between the predicted and actual ratings
+        prediction = prediction / user_interactions
+        prediction = (prediction - 1).abs()
 
-            # Add up the results and divide by the length of prediction
-            mean_score = prediction.sum() / len(prediction)
+        # Add up the results and divide by the length of prediction
+        mean_score = prediction.sum() / len(prediction)
 
-            # Check if the current mean_score is greater than the previous mean_score in the array
-            validation_result = validation_result and (mean_score > max(mean_score_array))
+        # Check if the current mean_score is greater than the previous mean_score in the array
+        validation_result = validation_result and (mean_score > max(mean_score_array))
 
-            # Append the current mean_score to the array
-            mean_score_array.append(mean_score)
+        # Append the current mean_score to the array
+        mean_score_array.append(mean_score)
 
     # Print the validation result
     if validation_result:
         print("Collaborative filtering has been successfully validated")
     else:
-        print("Collaborative filtering had a validation error")
+        raise ValueError("Collaborative filtering had a validation error")
