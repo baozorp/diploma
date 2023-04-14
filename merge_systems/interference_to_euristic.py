@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 
 # # Генерируем список случайных id
 # ids = np.arange(2200)
@@ -88,6 +87,3 @@ def interference_to_euristic(path):
 
     #     idx1 += 1
     # print(1)
-
-
-interference_to_euristic('/Users/baozorp/Projects/Python/Diploma/results')
