@@ -1,6 +1,5 @@
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-import random
 import os
 
 
@@ -79,11 +78,13 @@ def get_collaborative_filtering_recs(user_id, user_item_matrix, user_similarity_
 
 
 def collaborative_filtering_validation(user_id, user_item_matrix, user_similarity_df, exhibit_data):
-    # Get 5 random user IDs from the list
+    # Get user IDs from the exhibit_data
     user_ids = exhibit_data['user_id'].unique()
 
+    number_of_parts = 5
+
     # Calculate the number of users in each part of the dataset
-    part = int(len(user_ids) / 5)
+    part = int(len(user_ids) / number_of_parts)
 
     # Initialize validation_result to True
     validation_result = True
@@ -93,14 +94,13 @@ def collaborative_filtering_validation(user_id, user_item_matrix, user_similarit
     end_with = 0
 
     # Iterate over each part of the dataset
-    for j in range(5):
+    for _ in range(number_of_parts):
         # Get the collaborative filtering recommendations for a sample user
         start_from += part
         end_with += part
         user_interactions = user_item_matrix.loc[user_id]
         user_interactions = user_interactions[user_interactions > 0]
         prediction = get_collaborative_filtering_recs(user_id, user_item_matrix, user_similarity_df, start_from, end_with, validation=True)
-        print(prediction.sort_values(ascending=False))
 
         # Calculate the mean absolute error between the predicted and actual ratings
         prediction = prediction / user_interactions
