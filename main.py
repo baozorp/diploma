@@ -12,13 +12,9 @@ from recommendation_systems.distance import distance
 from merge_systems.merge_recommendations import merge_recommendations
 from merge_systems.interference_to_euristic import interference_to_euristic
 
-
-def run_julia():
-    jl.include("julia/1.jl")
-
-
 # start_generators()
 if __name__ == "__main__":
+    print("Start process")
     start = time.time()
 
     with open('config.yaml', 'r') as f:
@@ -43,20 +39,21 @@ if __name__ == "__main__":
 
     processes = []
 
-    processes.append(Process(target=run_julia))
-
     for target in targets:
-        process = Process(target=target[0], args=target[1:])
+        process = Thread(target=target[0], args=target[1:])
         processes.append(process)
 
     for process in processes:
         process.start()
 
+    if not os.path.isfile(results_path + "heuristic.csv"):
+        jl.include("julia/heuristic.jl")
+
     for process in processes:
         process.join()
 
-    merge_recommendations(results_path)
+    merge_recommendations(sources_path, results_path)
     interference_to_euristic(results_path)
-    # interference_to_euristic(results_path)
+
     end = time.time() - start
-    print(f"{end} seconds")
+    print(f"Process end with {end} seconds")

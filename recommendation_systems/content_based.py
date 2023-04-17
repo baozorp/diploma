@@ -3,18 +3,26 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import pairwise_distances
 import numpy as np
+import os
 # Function to recommend similar wines
 
 
 def content_based(sources_path, results_path):
 
-    current_user = pd.read_csv(f"{sources_path}current_user.csv")
+    user_data_path = sources_path + "current_user.csv"
+    exhibits_path = sources_path + "wine_museum_exhibits.csv"
 
+    if not os.path.isfile(user_data_path):
+        raise FileNotFoundError(f"Current user data file {user_data_path} not found.")
+    if not os.path.isfile(exhibits_path):
+        raise FileNotFoundError(f"Wine museum exhibits data file {user_data_path} not found.")
+
+    current_user = pd.read_csv(user_data_path)
     # Get the ID of the last object visited by user 0
     last_object_id = current_user.iloc[-1]['object_id']
 
     # Load the wine database into a DataFrame
-    df = pd.read_csv(f'{sources_path}wine_museum_exhibits.csv', usecols=lambda column: column != 'ID')
+    df = pd.read_csv(exhibits_path, usecols=lambda column: column != 'ID')
 
     # Select relevant features for similarity calculations
 
@@ -45,7 +53,7 @@ def content_based(sources_path, results_path):
     validation_result = (similarities == sorted(similarities, reverse=True))
     if validation_result:
         print("Content based has been successfully validated")
-        list_of_wines.to_csv(f"{results_path}/recs_content_based.csv", index=False)
+        list_of_wines.to_csv(f"{results_path}recs_content_based.csv", index=False)
     else:
         print("Content based had a validation error")
 

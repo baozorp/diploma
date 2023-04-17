@@ -56,7 +56,7 @@ max_iterations = 150
 # Call the generate start route function
 start_solution = generateRoute(objects, 20)
 node_count = length(start_solution)
-print(start_solution)
+println(start_solution)
 
 using Random
 

@@ -1,32 +1,29 @@
 import pandas as pd
-
-# # Генерируем список случайных id
-# ids = np.arange(2200)
-
-# # Перемешиваем индексы
-# shuffled_indices = np.random.permutation(2200)
-
-# # Создаем DataFrame, используя перемешанные индексы в столбце "ID"
-# df = pd.DataFrame(ids[shuffled_indices], columns=["ID"])
-
-# # Сохраняем результат в файл без индексов
-# df.to_csv('/Users/baozorp/Projects/Python/Diploma/results/heuristic.csv', index=False)
+import os
 
 
-def interference_to_euristic(path):
+def interference_to_euristic(results_path):
+
+    heuristic_path = results_path + '/heuristic.csv'
+    merge_recommendations_path = results_path + '/merged_recommendations.csv'
+
+    if not os.path.isfile(heuristic_path):
+        raise FileNotFoundError(f"Heuristic data file {heuristic_path} not found.")
+    if not os.path.isfile(merge_recommendations_path):
+        raise FileNotFoundError(f"Merged recommendations data file {merge_recommendations_path} not found.")
 
     # загрузка файлов
-    heuristic_df = pd.read_csv(path + '/heuristic.csv')
-    recommendations_df = pd.read_csv(path + '/merged_recommendations.csv')
+    heuristic = pd.read_csv(heuristic_path)
+    recommendations_df = pd.read_csv(merge_recommendations_path)
 
-    heuristic_df = heuristic_df[heuristic_df['ID'].isin(recommendations_df['ID'])].reset_index(drop=True)
+    heuristic = heuristic[heuristic['ID'].isin(recommendations_df['ID'])].reset_index(drop=True)
     # Выдаем очки для результатов эвристики
     max_score = recommendations_df['merge_scores'].max()
-    num_rows = heuristic_df.shape[0]
+    num_rows = heuristic.shape[0]
 
-    heuristic_df['heuristic_scores'] = heuristic_df.index.map(lambda i: (num_rows - i) * max_score / num_rows)
+    heuristic['heuristic_scores'] = heuristic.index.map(lambda i: (num_rows - i) * max_score / num_rows) ** 2 / max_score
 
-    merged_df = pd.merge(heuristic_df, recommendations_df, on='ID')
+    merged_df = pd.merge(heuristic, recommendations_df, on='ID')
 
     merged_df['Optimal_Scores'] = merged_df[['merge_scores', 'heuristic_scores']].max(axis=1)
 
@@ -34,7 +31,7 @@ def interference_to_euristic(path):
 
     sorted_df = merged_df.sort_values(by='Optimal_Scores', ascending=False)
 
-    sorted_df.to_csv('/Users/baozorp/Projects/Python/Diploma/results/final_results.csv', index=False)
+    sorted_df.to_csv(results_path + 'final_results.csv', index=False)
 
     print("Successfully interference")
 
@@ -89,3 +86,17 @@ def interference_to_euristic(path):
 
     #     idx1 += 1
     # print(1)
+
+# Только для тестов
+
+# # Генерируем список случайных id
+# ids = np.arange(2200)
+
+# # Перемешиваем индексы
+# shuffled_indices = np.random.permutation(2200)
+
+# # Создаем DataFrame, используя перемешанные индексы в столбце "ID"
+# df = pd.DataFrame(ids[shuffled_indices], columns=["ID"])
+
+# # Сохраняем результат в файл без индексов
+# df.to_csv('/Users/baozorp/Projects/Python/Diploma/results/heuristic.csv', index=False)

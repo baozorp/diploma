@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 
 
 def _recommend_distances(objects, room_distance_matrix, current_object):
@@ -33,14 +34,22 @@ def _calculate_distance(x1, y1, x2, y2):
 
 def distance(sources_path, results_path):
 
+    coordinates_path = sources_path + "coordinates.csv"
+    room_distance_matrix_path = sources_path + "room_distance_matrix.csv"
+
+    if not os.path.isfile(coordinates_path):
+        raise FileNotFoundError(f"Coordinates data file {coordinates_path} not found.")
+    if not os.path.isfile(room_distance_matrix_path):
+        raise FileNotFoundError(f"Room distances data file {room_distance_matrix_path} not found.")
+
     # Load objects from CSV
-    objects_df = pd.read_csv(f"{sources_path}coordinates.csv")
+    objects_df = pd.read_csv(coordinates_path)
 
     # Convert DataFrame to list of objects
     objects = objects_df.to_dict('records')
 
     # Load room distance matrix from CSV
-    room_distance_matrix_df = pd.read_csv(f"{sources_path}room_distance_matrix.csv", index_col=0)
+    room_distance_matrix_df = pd.read_csv(room_distance_matrix_path, index_col=0)
     room_distance_matrix_df.columns = room_distance_matrix_df.columns.astype(int)
 
     # Convert DataFrame to room distance matrix
