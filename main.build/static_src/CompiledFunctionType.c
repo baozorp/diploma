@@ -1,1 +1,0 @@
-/Users/baozorp/Projects/Python/Diploma/venv/lib/python3.11/site-packages/nuitka/build/static_src/CompiledFunctionType.c

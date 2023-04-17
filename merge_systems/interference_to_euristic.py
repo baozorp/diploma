@@ -36,6 +36,8 @@ def interference_to_euristic(path):
 
     sorted_df.to_csv('/Users/baozorp/Projects/Python/Diploma/results/final_results.csv', index=False)
 
+    print("Successfully interference")
+
     # optimal_table = df2.set_index('ID').combine_first(df1.set_index('ID')).reset_index()
     # optimal_table.to_csv('/Users/baozorp/Projects/Python/Diploma/results/optimal_table.csv', index=False)
     # # создаем пустую таблицу для хранения результата

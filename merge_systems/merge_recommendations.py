@@ -38,3 +38,4 @@ def merge_recommendations(path):
     df = df.rename(columns={'score': 'merge_scores'})
     df = df.sort_values(by="merge_scores", ascending=False)
     df.to_csv('results/merged_recommendations.csv', index=False)
+    print("Successfully merged")

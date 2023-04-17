@@ -5,8 +5,8 @@ import os
 
 def collaborative_system(sources_path, results_path):
 
-    exhibit_data_path = sources_path + "/exhibit_data.csv"
-    current_user_path = sources_path + "/current_user.csv"
+    exhibit_data_path = sources_path + "exhibit_data.csv"
+    current_user_path = sources_path + "current_user.csv"
 
     if not os.path.isfile(exhibit_data_path):
         raise FileNotFoundError(f"Exhibit data file {exhibit_data_path} not found.")

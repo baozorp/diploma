@@ -8,13 +8,13 @@ import numpy as np
 
 def content_based(sources_path, results_path):
 
-    current_user = pd.read_csv(f"{sources_path}/current_user.csv")
+    current_user = pd.read_csv(f"{sources_path}current_user.csv")
 
     # Get the ID of the last object visited by user 0
     last_object_id = current_user.iloc[-1]['object_id']
 
     # Load the wine database into a DataFrame
-    df = pd.read_csv('sources/wine_museum_exhibits.csv', usecols=lambda column: column != 'ID')
+    df = pd.read_csv(f'{sources_path}wine_museum_exhibits.csv', usecols=lambda column: column != 'ID')
 
     # Select relevant features for similarity calculations
 

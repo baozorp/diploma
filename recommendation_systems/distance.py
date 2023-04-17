@@ -23,7 +23,6 @@ def _recommend_distances(objects, room_distance_matrix, current_object):
     df = df.sort_values(by='distances', ascending=True)
     #df = df.drop(current_object)
     # Save DataFrame to CSV file
-    df.to_csv('results/recs_distances.csv', index_label='ID')
     return df
 
 
@@ -35,13 +34,13 @@ def _calculate_distance(x1, y1, x2, y2):
 def distance(sources_path, results_path):
 
     # Load objects from CSV
-    objects_df = pd.read_csv(f"{sources_path}/coordinates.csv")
+    objects_df = pd.read_csv(f"{sources_path}coordinates.csv")
 
     # Convert DataFrame to list of objects
     objects = objects_df.to_dict('records')
 
     # Load room distance matrix from CSV
-    room_distance_matrix_df = pd.read_csv(f"{sources_path}/room_distance_matrix.csv", index_col=0)
+    room_distance_matrix_df = pd.read_csv(f"{sources_path}room_distance_matrix.csv", index_col=0)
     room_distance_matrix_df.columns = room_distance_matrix_df.columns.astype(int)
 
     # Convert DataFrame to room distance matrix
@@ -50,4 +49,4 @@ def distance(sources_path, results_path):
     current_object = 231
     results = _recommend_distances(objects, room_distance_matrix, current_object)
     # Save DataFrame to CSV file
-    results.to_csv(f"{results_path}/recs_distances.csv", index_label='ID')
+    results.to_csv(f"{results_path}recs_distances.csv", index_label='ID')
