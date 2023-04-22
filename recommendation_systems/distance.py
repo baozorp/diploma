@@ -59,3 +59,7 @@ def distance(sources_path, results_path):
     results = _recommend_distances(objects, room_distance_matrix, current_object)
     # Save DataFrame to CSV file
     results.to_csv(f"{results_path}recs_distances.csv", index_label='ID')
+    if not results.isnull().values.any() and (results >= 0).all().all():
+        print("Distance has been successfully validated")
+    else:
+        raise ValueError("Distance had a validation error")

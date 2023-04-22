@@ -6,9 +6,11 @@ from julia import Main as jl
 from multiprocessing import Process
 
 from generators.generators import start_generators
+
 from recommendation_systems.content_based import content_based
 from recommendation_systems.collaborative_system import collaborative_system
 from recommendation_systems.distance import distance
+
 from merge_systems.merge_recommendations import merge_recommendations
 from merge_systems.interference_to_euristic import interference_to_euristic
 
@@ -23,7 +25,7 @@ if __name__ == "__main__":
     results_path = config['paths']['results']
 
     if not os.path.exists(sources_path):
-        raise FileNotFoundError(f"Exhibit folder {sources_path} not found.")
+        raise FileNotFoundError(f"Exhibit folder {sources_path} not found")
 
     if not os.path.exists(results_path):
         try:
@@ -46,8 +48,7 @@ if __name__ == "__main__":
     for process in processes:
         process.start()
 
-    if not os.path.isfile(results_path + "heuristic.csv"):
-        jl.include("julia/heuristic.jl")
+    jl.include("julia/heuristic.jl")
 
     for process in processes:
         process.join()

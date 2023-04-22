@@ -55,7 +55,7 @@ def content_based(sources_path, results_path):
         print("Content based has been successfully validated")
         list_of_wines.to_csv(f"{results_path}recs_content_based.csv", index=False)
     else:
-        print("Content based had a validation error")
+        raise ValueError("Content base had a validation error")
 
 
 def _recommend_wines(id, similarity, df):
