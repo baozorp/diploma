@@ -1,3 +1,8 @@
 paths:
   results: /Users/baozorp/Projects/Python/Diploma/results/
   sources: /Users/baozorp/Projects/Python/Diploma/sources/
+coefficients:
+  content_based: 1
+  collaborative: 1
+  distance_based: 1
+  heuristic: 1

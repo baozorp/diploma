@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-def merge_recommendations(sources_path, results_path):
+def merge_recommendations(sources_path, results_path, content_based_coeff, collaborative_coeff, distance_based_coeff):
     # Load the three recommendation CSV files
     df1_path = results_path + 'recs_collaborative.csv'
     df2_path = results_path + 'recs_content_based.csv'
@@ -17,16 +17,16 @@ def merge_recommendations(sources_path, results_path):
     df3 = pd.read_csv(df3_path)
 
     similarity_top = df2["similarity"].max()
-    df2["score"] = 100 * df2["similarity"] / similarity_top
+    df2["score"] = 100 * df2["similarity"] / similarity_top * content_based_coeff
 
     distances_top = df3["distances"].min()
-    df3["score"] = 100 * distances_top / df3["distances"]
+    df3["score"] = 100 * distances_top / df3["distances"] * distance_based_coeff
 
     if os.path.exists(df1_path):
         df1 = pd.read_csv(df1_path)
         # Calculate the scores for each recommendation
         seconds_top = df1["seconds"].max()
-        df1["score"] = 100 * df1["seconds"] / seconds_top
+        df1["score"] = 100 * df1["seconds"] / seconds_top * collaborative_coeff
     else:
         df1 = pd.DataFrame(columns=["ID", "score"])
         missing_ids = set(df2["ID"]).union(set(df3["ID"])) - set(df1["ID"])

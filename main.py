@@ -23,7 +23,10 @@ if __name__ == "__main__":
         config = yaml.load(f, Loader=yaml.FullLoader)
     sources_path = config['paths']['sources']
     results_path = config['paths']['results']
-
+    content_based_coeff = config['coefficients']['content_based']
+    collaborative_coeff = config['coefficients']['collaborative']
+    distance_based_coeff = config['coefficients']['distance_based']
+    heuristic_coeff = config['coefficients']['heuristic']
     if not os.path.exists(sources_path):
         raise FileNotFoundError(f"Exhibit folder {sources_path} not found")
 
@@ -53,8 +56,8 @@ if __name__ == "__main__":
     for process in processes:
         process.join()
 
-    merge_recommendations(sources_path, results_path)
-    interference_to_euristic(results_path)
+    merge_recommendations(sources_path, results_path, content_based_coeff, collaborative_coeff, distance_based_coeff)
+    interference_to_euristic(results_path, heuristic_coeff)
 
     end = time.time() - start
     print(f"Process end with {end} seconds")

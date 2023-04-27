@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-def interference_to_euristic(results_path):
+def interference_to_euristic(results_path, heuristic_coeff):
 
     heuristic_path = results_path + '/heuristic.csv'
     merge_recommendations_path = results_path + '/merged_recommendations.csv'
@@ -21,7 +21,7 @@ def interference_to_euristic(results_path):
     max_score = recommendations_df['merge_scores'].max()
     num_rows = heuristic.shape[0]
 
-    heuristic['heuristic_scores'] = heuristic.index.map(lambda i: (num_rows - i) * max_score / num_rows) ** 2 / max_score
+    heuristic['heuristic_scores'] = heuristic.index.map(lambda i: (num_rows - i) * max_score / num_rows) ** 2 / max_score * heuristic_coeff
 
     merged_df = pd.merge(heuristic, recommendations_df, on='ID')
 
