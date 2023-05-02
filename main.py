@@ -51,8 +51,6 @@ if __name__ == "__main__":
     for process in processes:
         process.start()
 
-    jl.include("julia/heuristic.jl")
-
     for process in processes:
         process.join()
 
