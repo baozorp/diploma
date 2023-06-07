@@ -5,8 +5,6 @@ import os
 from julia import Main as jl
 from multiprocessing import Process
 
-from generators.generators import start_generators
-
 from recommendation_systems.content_based import content_based
 from recommendation_systems.collaborative_system import collaborative_system
 from recommendation_systems.distance import distance
