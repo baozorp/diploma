@@ -37,7 +37,8 @@ if __name__ == "__main__":
     targets = [
         (content_based, sources_path, results_path),
         (distance, sources_path, results_path),
-        (collaborative_system, sources_path, results_path)
+        (collaborative_system, sources_path, results_path),
+        (jl.include, "julia/heuristic.jl")
     ]
 
     processes = []
